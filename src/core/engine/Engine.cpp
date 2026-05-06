@@ -41,7 +41,7 @@ bool Engine::InitImpl() {
         LOGF(WARNING, "Failed to parse config, using default values");
 
 #ifdef _DEBUG
-    if (!cfg::dev::console)
+    if (!cfg::settings::console)
         LogHelper::Free();
 #endif
 
@@ -58,7 +58,38 @@ void Engine::Thread() {
     while (true) {
         auto start = steady_clock::now();
 
+        static bool was_pressed = false;
+        bool is_pressed = (GetAsyncKeyState(cfg::triggerbot::hotkey) & 0x8000);
+
+        if (is_pressed && !was_pressed) {
+            cfg::triggerbot::enabled = !cfg::triggerbot::enabled;
+            LOGF(INFO, "Triggerbot toggled: {}", cfg::triggerbot::enabled ? "ENABLED" : "DISABLED");
+        }
+        was_pressed = is_pressed;
+
         Cache::Refresh();
+        
+        if (cfg::triggerbot::enabled) {
+            auto snapshot = Cache::CopySnapshot();
+            auto local = snapshot.local;
+
+            if (local.alive && local.crosshair_id > 0) {
+                for (const auto& player : snapshot.players) {
+                    int player_pawn_index = (player.pawn_controller_addr & 0x7FFF);
+                    if (player_pawn_index == local.crosshair_id) { 
+                        if (player.alive && player.team != local.team) {
+                            if (cfg::triggerbot::delay > 0)
+                                std::this_thread::sleep_for(std::chrono::milliseconds(cfg::triggerbot::delay));
+
+                            mouse_event(MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0);
+                            std::this_thread::sleep_for(std::chrono::milliseconds(10));
+                            mouse_event(MOUSEEVENTF_LEFTUP, 0, 0, 0, 0);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
 
         if (cfg::settings::free_cpu)
             std::this_thread::sleep_until(start + 1ms);

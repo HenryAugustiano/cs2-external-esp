@@ -24,6 +24,7 @@ void LogHelper::Free() {
 }
 
 bool LogHelper::InitImpl() {
+    AllocConsole();
     Logger::Init();
 
     if (auto handle = GetStdHandle(STD_OUTPUT_HANDLE); handle != nullptr)

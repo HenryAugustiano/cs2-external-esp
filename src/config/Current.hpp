@@ -57,11 +57,18 @@ namespace cfg {
 		inline Vec2_t pos{ 10.f, 100.f };
 	}
 
+	namespace triggerbot {
+		inline bool enabled = false;
+		inline int delay = 50; // ms
+		inline int hotkey = 'V';
+	}
+
 	namespace settings {
 		inline bool watermark = true;
 		inline bool crosshair = false;
 		inline bool streamproof = false;
 		inline bool vsync = false;
+		inline bool console = true;
 
 		inline bool free_cpu = true;
 	}
@@ -69,7 +76,6 @@ namespace cfg {
 #ifdef _DEBUG
 	// Not stored, just for testing
 	namespace dev {
-		inline bool console = true;
 		inline int open_menu_key = false;
 		inline int cache_refresh_rate = 5;
 	}

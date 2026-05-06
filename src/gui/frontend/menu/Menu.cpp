@@ -204,6 +204,17 @@ void Menu::RenderImpl() {
 						ImGui::EndChild();
 					}
 				}
+				else if (active_tab == Tab::COMBAT)
+				{
+					ImGui::Text("Triggerbot");
+					ImGui::Separator();
+
+					ImGui::Checkbox("Enable Triggerbot", &cfg::triggerbot::enabled);
+					ImGui::SameLine();
+					ImGui::TextDisabled("(Key: %c)", (char)cfg::triggerbot::hotkey);
+
+					ImGui::SliderInt("Delay (ms)", &cfg::triggerbot::delay, 0, 500);
+				}
 				else if (active_tab == Tab::WORLD)
 				{
 					ImGui::Text("Bomb");
@@ -240,6 +251,7 @@ void Menu::RenderImpl() {
 
 					ImGui::Checkbox("Watermark", &cfg::settings::watermark);
 					ImGui::Checkbox("Crosshair", &cfg::settings::crosshair);
+					ImGui::Checkbox("Console", &cfg::settings::console);
 
 					if (ImGui::Checkbox("VSync", &cfg::settings::vsync))
 						Window::vsync = cfg::settings::vsync;
@@ -259,9 +271,6 @@ void Menu::RenderImpl() {
 #ifdef _DEBUG
 					ImGui::Text("Dev");
 					ImGui::Separator();
-
-					if (ImGui::Checkbox("Console", &cfg::dev::console))
-						if (!cfg::dev::console) LogHelper::Free();
 
 					static int key_out;
 					if (ImGui::Button("Open Menu Key"))

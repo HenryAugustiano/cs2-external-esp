@@ -35,7 +35,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_iHealth = 0x34C; // int32
 		constexpr std::ptrdiff_t m_iTeamNum = 0x3EB; // uint8
 		constexpr std::ptrdiff_t m_bIsScoped = 0x01C48; // bool
-		constexpr std::ptrdiff_t m_ArmorValue = 0x1C74; // int32
+		constexpr std::ptrdiff_t m_ArmorValue = 0x1C7C; // int32
 		constexpr std::ptrdiff_t m_bIsDefusing = 0x1C8A; // bool
 		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
 		constexpr std::ptrdiff_t m_pClippingWeapon = 0x3DC0; // C_CSWeaponBase*
@@ -52,25 +52,8 @@ namespace offsets
 		constexpr std::ptrdiff_t m_pObserverServices = 0x11F8; // CPlayer_ObserverServices*
 
 
-#if 0
-		constexpr std::ptrdiff_t maxHealth = 0x328;
-		constexpr std::ptrdiff_t currentHealth = 0x32C;
-		constexpr std::ptrdiff_t gameSceneNode = 0x310;
-		constexpr std::ptrdiff_t boneArray = 0x1E0;
-		constexpr std::ptrdiff_t angEyeAngles = 0x1510;
-		constexpr std::ptrdiff_t vecLastClipCameraPos = 0x128C;
-		constexpr std::ptrdiff_t pClippingWeapon = 0x12A8;
-		constexpr std::ptrdiff_t iShotsFired = 0x1418;
-		constexpr std::ptrdiff_t flFlashDuration = 0x1468;
-		constexpr std::ptrdiff_t aimPunchAngle = 0x1714;
-		constexpr std::ptrdiff_t aimPunchCache = 0x1738;
-		constexpr std::ptrdiff_t iIdEntIndex = 0x153C;
-		constexpr std::ptrdiff_t iTeamNum = 0x3BF;
-		constexpr std::ptrdiff_t cameraServices = 0x10E0;
-		constexpr std::ptrdiff_t iFovStart = 0x214;
-		constexpr std::ptrdiff_t fFlags = 0x3C8;
-		constexpr std::ptrdiff_t bSpottedByMask = 0x1630 + 0xC; // entitySpottedState + bSpottedByMask
-#endif
+
+		constexpr std::ptrdiff_t m_iIdEntIndex = 0x343C; // int32 - C_CSPlayerPawnBase
 	}
 
 	namespace bomb {

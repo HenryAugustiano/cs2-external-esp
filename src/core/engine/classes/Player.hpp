@@ -38,6 +38,7 @@ public:
 
     std::vector<bone_pos> bone_list;
 
+    int crosshair_id = -1;
     int pawn_controller_addr;
     ObserverServices observer_services;
 private:

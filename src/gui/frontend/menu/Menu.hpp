@@ -38,6 +38,7 @@ private:
 
 enum Tab {
     PLAYER,
+    COMBAT,
     WORLD,
     SETTINGS
 };
@@ -51,6 +52,7 @@ struct TabItem
 static constexpr TabItem tabs[] =
 {
     { "Player",   Tab::PLAYER   },
+    { "Combat",   Tab::COMBAT   },
     { "World",    Tab::WORLD    },
     { "Settings", Tab::SETTINGS }
 };

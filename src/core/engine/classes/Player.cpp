@@ -101,7 +101,11 @@ bool Player::UpdatePawn() {
 	if (!alive) // No need to continue 
 		return true;
 
-	this->pos = p->read<Vec3_t>(pawn + offsets::pawn::m_vOldOrigin);
+	auto game_scene = p->read<DWORD64>(pawn + offsets::pawn::m_pGameSceneNode);
+	if (!game_scene)
+		return false;
+
+	this->pos = p->read<Vec3_t>(game_scene + offsets::bomb::m_vecAbsOrigin);
 
 	if (this->pos.zero())
 		return false;
@@ -113,6 +117,7 @@ bool Player::UpdatePawn() {
 	this->spotted = p->read<bool>(pawn + offsets::pawn::m_entitySpottedState + offsets::pawn::m_bSpottedByMask);
 	this->flashed = p->read<float>(pawn + offsets::pawn::m_flFlashOverlayAlpha) > 0;
 	this->scoped = p->read<bool>(pawn + offsets::pawn::m_bIsScoped);
+	this->crosshair_id = p->read<int>(pawn + offsets::pawn::m_iIdEntIndex);
 
 	if (!UpdateSkeleton()) {
 		LOGF(FATAL, "Failed to update skeleton");

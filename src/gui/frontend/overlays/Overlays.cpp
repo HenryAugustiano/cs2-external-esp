@@ -57,6 +57,8 @@ void Overlays::RenderWatermark() {
 	if (globals.in_match)
 		watermark_string += std::format(" | {}", globals.map_name);
 
+	watermark_string += std::format(" | Trigger: {}", cfg::triggerbot::enabled ? "ON" : "OFF");
+
 	auto size = ImGui::CalcTextSize(watermark_string.data());
 
 	auto rect_start = ImVec2(io.DisplaySize.x - margin - padding * 2 - size.x, margin);
