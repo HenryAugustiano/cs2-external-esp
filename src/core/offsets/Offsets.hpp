@@ -15,11 +15,11 @@ namespace offsets
 	inline DWORD buildNumber;
 
 	namespace controller {
-		constexpr std::ptrdiff_t m_iPing = 0x820; // uint32
+		constexpr std::ptrdiff_t m_iPing = 0x828; // uint32
 		constexpr std::ptrdiff_t m_hPawn = 0x6BC; // CHandle<C_BasePlayerPawn>
-		constexpr std::ptrdiff_t m_steamID = 0x778; // uint64
-		constexpr std::ptrdiff_t m_iszPlayerName = 0x6F0; // char[128]
-		constexpr std::ptrdiff_t m_bIsLocalPlayerController = 0x780; // bool
+		constexpr std::ptrdiff_t m_steamID = 0x780; // uint64
+		constexpr std::ptrdiff_t m_iszPlayerName = 0x6F4; // char[128]
+		constexpr std::ptrdiff_t m_bIsLocalPlayerController = 0x788; // bool
 		constexpr std::ptrdiff_t m_pInGameMoneyServices = 0x800; // CCSPlayerController_InGameMoneyServices*
 		constexpr std::ptrdiff_t m_iAccount = 0x40; // int32 - CCSPlayerController_InGameMoneyServices 
 
@@ -34,14 +34,18 @@ namespace offsets
 		constexpr std::ptrdiff_t m_vOldOrigin = 0x1390; // Vector
 		constexpr std::ptrdiff_t m_iHealth = 0x34C; // int32
 		constexpr std::ptrdiff_t m_iTeamNum = 0x3EB; // uint8
-		constexpr std::ptrdiff_t m_bIsScoped = 0x01C48; // bool
-		constexpr std::ptrdiff_t m_ArmorValue = 0x1C74; // int32
-		constexpr std::ptrdiff_t m_bIsDefusing = 0x1C8A; // bool
+		constexpr std::ptrdiff_t m_bIsScoped = 0x1C50; // bool
+		constexpr std::ptrdiff_t m_ArmorValue = 0x1C7C; // int32
+		constexpr std::ptrdiff_t m_bIsDefusing = 0x1C52; // bool
+
 		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
 		constexpr std::ptrdiff_t m_pClippingWeapon = 0x3DC0; // C_CSWeaponBase*
-		constexpr std::ptrdiff_t m_entitySpottedState = 0x1170; // EntitySpottedState_t
+		
+		constexpr std::ptrdiff_t m_entitySpottedState = 0x1C38; // EntitySpottedState_t
 		constexpr std::ptrdiff_t m_bSpottedByMask = 0xC; // uint32[2] - EntitySpottedState_t
+		
 		constexpr std::ptrdiff_t m_flFlashOverlayAlpha = 0x13F4; // float32 - C_CSPlayerPawnBase 
+		
 		constexpr std::ptrdiff_t m_pWeaponServices = 0x11E0; // CPlayer_WeaponServices*
 		constexpr std::ptrdiff_t m_hActiveWeapon = 0x60; // CHandle<C_BasePlayerWeapon> - CPlayer_WeaponServices
 		constexpr std::ptrdiff_t m_AttributeManager = 0x1180; // C_AttributeContainer - C_EconEntity (parent of C_BasePlayerWeapon)
@@ -50,27 +54,6 @@ namespace offsets
 		constexpr std::ptrdiff_t m_iClip1 = 0x16D8; // int32 - C_BasePlayerWeapon
 		constexpr std::ptrdiff_t m_bInReload = 0x17F4; // bool - C_CSWeaponBase
 		constexpr std::ptrdiff_t m_pObserverServices = 0x11F8; // CPlayer_ObserverServices*
-
-
-#if 0
-		constexpr std::ptrdiff_t maxHealth = 0x328;
-		constexpr std::ptrdiff_t currentHealth = 0x32C;
-		constexpr std::ptrdiff_t gameSceneNode = 0x310;
-		constexpr std::ptrdiff_t boneArray = 0x1E0;
-		constexpr std::ptrdiff_t angEyeAngles = 0x1510;
-		constexpr std::ptrdiff_t vecLastClipCameraPos = 0x128C;
-		constexpr std::ptrdiff_t pClippingWeapon = 0x12A8;
-		constexpr std::ptrdiff_t iShotsFired = 0x1418;
-		constexpr std::ptrdiff_t flFlashDuration = 0x1468;
-		constexpr std::ptrdiff_t aimPunchAngle = 0x1714;
-		constexpr std::ptrdiff_t aimPunchCache = 0x1738;
-		constexpr std::ptrdiff_t iIdEntIndex = 0x153C;
-		constexpr std::ptrdiff_t iTeamNum = 0x3BF;
-		constexpr std::ptrdiff_t cameraServices = 0x10E0;
-		constexpr std::ptrdiff_t iFovStart = 0x214;
-		constexpr std::ptrdiff_t fFlags = 0x3C8;
-		constexpr std::ptrdiff_t bSpottedByMask = 0x1630 + 0xC; // entitySpottedState + bSpottedByMask
-#endif
 	}
 
 	namespace bomb {
