@@ -71,6 +71,7 @@ void Esp::RenderImpl() {
 	}
 
 	RenderCrosshair(local);
+	RenderSpeed(local);
 
 	ImGui::PopFont();
 }
@@ -323,6 +324,23 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 		offset -= offset_mult;
 	}
+}
+
+void Esp::RenderSpeed(Player local) {
+	// config check
+
+	Vec2_t speed2d(local.vel.x, local.vel.y);
+	int speed = static_cast<int>(floorf(speed2d.len()));
+
+	ImVec2 center(
+		floorf(io.DisplaySize.x * 0.5f),
+		floorf(io.DisplaySize.y * 0.8f));
+
+	d->AddText(
+		center,
+		IM_COL32(255, 255, 255, 255),
+		std::to_string(speed).c_str());
+
 }
 
 void Esp::RenderCrosshair(Player local)

@@ -38,6 +38,7 @@ private:
     void RenderPlayerTracker(Player player, std::pair<Vec2_t, Vec2_t> bounds, bool mate = false);
     void RenderPlayerTracers(Player source, Player player, bool mate = false);
 
+    void RenderSpeed(Player local);
 	void RenderCrosshair(Player local);
     void RenderBomb(Player local, Bomb bomb);
     void RenderSpectatorList(std::vector<Player>& players);
