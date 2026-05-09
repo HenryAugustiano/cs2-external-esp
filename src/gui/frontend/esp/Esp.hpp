@@ -31,6 +31,11 @@ private:
     // Temporary storage for ease
     view_matrix_t matrix;
 
+    // dont know where vel_buffer should live
+    std::vector<int> vel_buffer;
+    size_t vel_index = 0;
+    float vel_accumulator = 0.0f;
+
     void RenderPlayer(Player player, bool mate = false);
     void RenderPlayerBones(Player player, bool mate = false);
     void RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds);

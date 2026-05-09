@@ -18,6 +18,9 @@ bool Esp::InitImpl() {
 
 	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
 
+	// make space and fill for samples
+	this->vel_buffer.resize(static_cast<size_t>(cfg::world::velocity::sample_rate * cfg::world::velocity::sample_length));
+
 	return true;
 }
 
@@ -326,15 +329,57 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 	}
 }
 
-void Esp::RenderSpeed(Player local) {
-	// config check
+int prev_rate = cfg::world::velocity::sample_rate;
+float prev_length = cfg::world::velocity::sample_length;
 
-	Vec2_t speed2d(local.vel.x, local.vel.y);
-	int speed = static_cast<int>(floorf(speed2d.len()));
+void Esp::RenderSpeed(Player local) {
+	if (!cfg::world::velocity::enabled)
+		return;
+
+	if (prev_rate != cfg::world::velocity::sample_rate || prev_length != cfg::world::velocity::sample_length) {
+		prev_rate = cfg::world::velocity::sample_rate;
+		prev_length = cfg::world::velocity::sample_length;
+
+		vel_buffer.resize(static_cast<size_t>(cfg::world::velocity::sample_rate * cfg::world::velocity::sample_length));
+	}
+
+
+	Vec2_t speed_2d(local.vel.x, local.vel.y);
+	int speed = floor(speed_2d.len());
+
+	float sample_interval = 1.0f / cfg::world::velocity::sample_rate;
+
+	vel_accumulator += io.DeltaTime;
+	size_t size = vel_buffer.size();
+
+	while (vel_accumulator >= sample_interval)
+	{
+		vel_accumulator -= sample_interval;
+		vel_buffer.at(vel_index % size) = speed;
+		vel_index = (vel_index + 1) % size;
+	}
 
 	ImVec2 center(
 		floorf(io.DisplaySize.x * 0.5f),
-		floorf(io.DisplaySize.y * 0.8f));
+		floorf(io.DisplaySize.y * 0.75f));
+
+	for (int i = 1; i < size; i++) {
+		float x0 = ((i - 1) / float(size - 1) - 0.5f) * cfg::world::velocity::graph_width;
+		float x1 = ((i) / float(size - 1) - 0.5f) * cfg::world::velocity::graph_width;
+
+		ImVec2 prev_offset(
+			x0,
+			-vel_buffer.at((i - 1 + vel_index) % size) * cfg::world::velocity::graph_height);
+
+		ImVec2 offset(
+			x1,
+			-vel_buffer.at((i + vel_index) % size) * cfg::world::velocity::graph_height);
+
+		d->AddLine(
+			center + prev_offset,
+			center + offset,
+			IM_COL32(255, 255, 255, 255));
+	}
 
 	d->AddText(
 		center,
@@ -345,7 +390,7 @@ void Esp::RenderSpeed(Player local) {
 
 void Esp::RenderCrosshair(Player local)
 {
-	if (!cfg::settings::crosshair)
+	if (!cfg::world::crosshair::enabled)
 		return;
 
 	if (local.scoped)
@@ -432,7 +477,7 @@ void Esp::RenderPlayerTracers(Player source, Player player, bool mate) {
 }
 
 void Esp::RenderBomb(Player local, Bomb bomb) {
-	if (!cfg::esp::bomb_location && !cfg::esp::bomb_timer)
+	if (!cfg::world::bomb::location && !cfg::world::bomb::timer)
 		return;
 
 	if (!bomb.is_planted)
@@ -465,14 +510,14 @@ void Esp::RenderBomb(Player local, Bomb bomb) {
 
 	std::string bomb_string = "";
 
-	if (cfg::esp::bomb_location)
+	if (cfg::world::bomb::location)
 	{
 		bomb_string += bombsite_str;
 	}
 
-	if (cfg::esp::bomb_timer)
+	if (cfg::world::bomb::timer)
 	{
-		if (cfg::esp::bomb_location)
+		if (cfg::world::bomb::location)
 			bomb_string += " - ";
 		else
 			bomb_string += " ";
@@ -518,13 +563,13 @@ Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
 
 // TODO: Move this to Overlays.cpp
 void Esp::RenderSpectatorList(std::vector<Player>& players) {
-	if (!cfg::spectators::enabled) 
+	if (!cfg::world::spectators::enabled)
 		return;
 
 	static auto io = ImGui::GetIO();
 	static auto screen = io.DisplaySize;
-	const bool detailed = cfg::spectators::detailed;
-	const bool self_only = cfg::spectators::self_only;
+	const bool detailed = cfg::world::spectators::detailed;
+	const bool self_only = cfg::world::spectators::self_only;
 	const bool is_menu_open = Renderer::IsOpen();
 	
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
@@ -547,7 +592,7 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 		return;
 
 	// Window
-	ImGui::SetNextWindowPos(ImVec2(cfg::spectators::pos.x, cfg::spectators::pos.y), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(ImVec2(cfg::world::spectators::pos.x, cfg::world::spectators::pos.y), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(150.f, 50.f), ImVec2(FLT_MAX, FLT_MAX));
 
 	if (!ImGui::Begin("Spectator list", nullptr, flags)) {
@@ -556,7 +601,7 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 	}
 
 	if (is_menu_open)
-		cfg::spectators::pos = {
+		cfg::world::spectators::pos = {
 			ImGui::GetWindowPos().x,
 			ImGui::GetWindowPos().y
 		};

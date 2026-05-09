@@ -25,8 +25,15 @@ ImVec2 Menu::GetSize() {
 	return GetInstance().size;
 }
 
+
+int temp_rate;
+float temp_length;
+
 bool Menu::InitImpl() {
 	SetupStyles();
+
+	temp_rate = cfg::world::velocity::sample_rate;
+	temp_length = cfg::world::velocity::sample_length;
 
 	LOGF(INFO, "Successfully initialized menu...");
 	return true;
@@ -206,23 +213,49 @@ void Menu::RenderImpl() {
 				}
 				else if (active_tab == Tab::WORLD)
 				{
+					
 					ImGui::Text("Bomb");
+					
 					ImGui::Separator();
 
-					ImGui::Checkbox("Bomb Location", &cfg::esp::bomb_location);
-					ImGui::Checkbox("Bomb Timer", &cfg::esp::bomb_timer);
+					ImGui::Checkbox("Bomb Location", &cfg::world::bomb::location);
+					ImGui::Checkbox("Bomb Timer", &cfg::world::bomb::timer);
 
 					ImGui::Spacing();
 
 					ImGui::Text("Spectator list");
 					ImGui::Separator();
 
-					ImGui::Checkbox("Enable", &cfg::spectators::enabled);
-					if (cfg::spectators::enabled) {
-						ImGui::Checkbox("Detailed", &cfg::spectators::detailed);
-						ImGui::Checkbox("Only Self", &cfg::spectators::self_only);
+					ImGui::Checkbox("Enable", &cfg::world::spectators::enabled);
+					if (cfg::world::spectators::enabled) {
+						ImGui::Checkbox("Detailed", &cfg::world::spectators::detailed);
+						ImGui::Checkbox("Only Self", &cfg::world::spectators::self_only);
 						ImGui::SetItemTooltip("Only display users spectating you");
 					}
+
+					ImGui::Spacing();
+				
+					ImGui::Text("Self");
+					ImGui::Separator();
+
+					ImGui::Checkbox("Crosshair", &cfg::world::crosshair::enabled);
+					ImGui::Checkbox("Show Velocity", &cfg::world::velocity::enabled);
+
+					if (cfg::world::velocity::enabled) {
+						ImGui::SliderInt("Sample rate", &temp_rate, 1, 100);
+
+						if (ImGui::IsItemDeactivatedAfterEdit())
+							cfg::world::velocity::sample_rate = temp_rate;
+
+						ImGui::SliderFloat("Sample length", &temp_length, 1, 20, "%.1f");
+
+						if (ImGui::IsItemDeactivatedAfterEdit())
+							cfg::world::velocity::sample_length = temp_length;
+
+						ImGui::SliderFloat("Graph height", &cfg::world::velocity::graph_height, 0.01f, 1.f, "%.3f", ImGuiSliderFlags_Logarithmic);
+						ImGui::SliderFloat("Graph width", &cfg::world::velocity::graph_width, 10.f, 1000.f, "%.1f");
+					}
+					
 
 				}
 				else if (active_tab == Tab::SETTINGS)
@@ -239,7 +272,6 @@ void Menu::RenderImpl() {
 					}
 
 					ImGui::Checkbox("Watermark", &cfg::settings::watermark);
-					ImGui::Checkbox("Crosshair", &cfg::settings::crosshair);
 
 					if (ImGui::Checkbox("VSync", &cfg::settings::vsync))
 						Window::vsync = cfg::settings::vsync;

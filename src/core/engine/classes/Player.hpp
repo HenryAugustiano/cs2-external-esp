@@ -54,12 +54,10 @@ private:
 private:
     bool GetPawn();
     bool GetController();
-    bool GetObserverServices();
 
     bool UpdatePawn();
     bool UpdateWeapon();
     bool UpdateSkeleton();
     bool UpdateController();
     bool UpdateObserverServices();
-    bool UpdateObserverServices2();
 };
