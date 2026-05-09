@@ -12,6 +12,8 @@ public:
     bool Update();
     bool GetBounds(view_matrix_t matrix, Vec2_t size, std::pair<Vec2_t, Vec2_t>& bounds);
 public:
+    int8_t index = -1; // To use as invalid/un-initialize check
+
     Vec3_t pos;
 
     int ping = 0;
@@ -42,8 +44,6 @@ public:
     int pawn_controller_addr;
     ObserverServices observer_services;
 private:
-    int index;
-
     uintptr_t list_entry;
     uintptr_t entity_list;
 

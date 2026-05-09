@@ -3,8 +3,9 @@
 Simple external ESP for Counter-Strike 2. After years of development the codebase has been modernized for clarity and ease of use, featuring a redesigned interface, noticeable performance improvements, several quality-of-life additions, and automatic offset scanning to help maintain compatibility through game updates.
 
 - This project is mirrored in the following locations.
-  - **Gitlab**: [*gitlab.com/IMXNOOBX/cs2-external-esp*](https://gitlab.com/IMXNOOBX/cs2-external-esp)
-  - **CodeBerg**: [*codeberg.org/IMXNOOBX/cs2-external-esp*](https://codeberg.org/IMXNOOBX/cs2-external-esp)
+  - **GitHub**: [*github.com/IMXNOOBX/cs2-external-esp*](https://github.com/IMXNOOBX/cs2-external-esp) (main)
+  - **GitLab**: [*gitlab.com/IMXNOOBX/cs2-external-esp*](https://gitlab.com/IMXNOOBX/cs2-external-esp) (mirror)
+  - **CodeBerg**: [*codeberg.org/IMXNOOBX/cs2-external-esp*](https://codeberg.org/IMXNOOBX/cs2-external-esp) (mirror)
 
 > In case this repository disappears *(not the first time)*, work will continue in the mirrors.
 
@@ -16,10 +17,15 @@ Simple external ESP for Counter-Strike 2. After years of development the codebas
 
 ## 🌳 Simple Use
 
-1. You can download it from [**Releases**](https://github.com/IMXNOOBX/cs2-external-esp/releases) tab or **build it yourself** by following [developers instructions](#-developer-instructions).
+- You can download it from [**Releases**](https://github.com/IMXNOOBX/cs2-external-esp/releases) tab or **build it yourself** by following [developers instructions](#-developer-instructions).
+- Open the game & the `cs2-external-esp.exe`, and thats it!
+- **Star** the repository **if** you **like the project**! ⭐⭐⭐
 
-2. Open the game & the `cs2-external-esp.exe`, and thats it!
-3. **⭐ The repository if you like the project!**
+> If the app crashes on startup, you may be missing the latest [Windows Visual C++ redistributables](https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist?view=msvc-170#latest-supported-redistributable-version). Install the appropriate package for your system:
+>
+> - [64-bit Windows](https://aka.ms/vc14/vc_redist.x64.exe) *for most modern systems*
+> - [32-bit](https://aka.ms/vc14/vc_redist.x86.exe) *for older devices*
+
 
 > [!IMPORTANT]
 > Make sure your game is in full screen windowed❗

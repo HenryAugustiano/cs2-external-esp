@@ -56,6 +56,12 @@ bool Cache::RefreshImpl() {
 
         if (player.localplayer)
             this->local = player;
+
+        // TODO: Handle or at least alert, in case of multiple lp
+        //if (player.localplayer && (this->local.index == -1 || this->local.index == player.index))
+        //    this->local = player;
+        //else if (player.localplayer)
+        //    LOGF(FATAL, "Offset missmatch, initial({}) current({}) there are more than one local players, update needed", this->local.index, player.index);
     
         scan.push_back(player);
     }
