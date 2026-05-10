@@ -66,10 +66,11 @@ namespace cfg {
 
 		namespace velocity {
 			inline bool enabled = false;
-			inline int sample_rate = 10;
+			inline int sample_rate = 35;
 			inline float sample_length = 5.f;
-			inline float graph_height = 0.2f;
-			inline float graph_width = 400.f;
+
+			inline Vec2_t size{ 400.f, 100.f };
+			inline Vec2_t pos{ 10.f, 100.f };
 		}
 	}
 

@@ -336,13 +336,32 @@ void Esp::RenderSpeed(Player local) {
 	if (!cfg::world::velocity::enabled)
 		return;
 
-	if (prev_rate != cfg::world::velocity::sample_rate || prev_length != cfg::world::velocity::sample_length) {
+	const static float padding = 10.0f;
+	const bool is_menu_open = Renderer::IsOpen();
+
+	if (is_menu_open) {
+		auto height_padding = 25; // some padding to keep the speed number inside the area
+		auto altitude_padding = 10; // so it doesnt go under the titlebar
+
+		ImGui::SetNextWindowBgAlpha(0.1f);
+		ImGui::SetNextWindowSize(cfg::world::velocity::size + Vec2_t(0, height_padding));
+		if (ImGui::Begin("Velocity Graph", nullptr, ImGuiWindowFlags_NoCollapse))
+		{
+			cfg::world::velocity::pos = ImGui::GetWindowPos() + ImVec2(0, altitude_padding);
+			cfg::world::velocity::size = ImGui::GetWindowSize() - ImVec2(0, height_padding);
+			ImGui::End();
+		}
+	}
+
+	if (
+		prev_rate != cfg::world::velocity::sample_rate || 
+		prev_length != cfg::world::velocity::sample_length
+	) {
 		prev_rate = cfg::world::velocity::sample_rate;
 		prev_length = cfg::world::velocity::sample_length;
 
 		vel_buffer.resize(static_cast<size_t>(cfg::world::velocity::sample_rate * cfg::world::velocity::sample_length));
 	}
-
 
 	Vec2_t speed_2d(local.vel.x, local.vel.y);
 	int speed = floor(speed_2d.len());
@@ -359,33 +378,52 @@ void Esp::RenderSpeed(Player local) {
 		vel_index = (vel_index + 1) % size;
 	}
 
-	ImVec2 center(
-		floorf(io.DisplaySize.x * 0.5f),
-		floorf(io.DisplaySize.y * 0.75f));
+	ImVec2 graph_pos = cfg::world::velocity::pos;
+	ImVec2 graph_size = cfg::world::velocity::size;
 
-	for (int i = 1; i < size; i++) {
-		float x0 = ((i - 1) / float(size - 1) - 0.5f) * cfg::world::velocity::graph_width;
-		float x1 = ((i) / float(size - 1) - 0.5f) * cfg::world::velocity::graph_width;
+	float left = graph_pos.x + padding;
+	float right = graph_pos.x + graph_size.x - padding;
+	float bottom = graph_pos.y + graph_size.y - padding;
+	float top = graph_pos.y + padding;
 
-		ImVec2 prev_offset(
-			x0,
-			-vel_buffer.at((i - 1 + vel_index) % size) * cfg::world::velocity::graph_height);
+	float width = right - left;
+	float height = bottom - top;
 
-		ImVec2 offset(
-			x1,
-			-vel_buffer.at((i + vel_index) % size) * cfg::world::velocity::graph_height);
+	int max_speed = 1;
+	for (int v : vel_buffer)
+		max_speed = std::max(max_speed, v);
+
+	for (size_t i = 1; i < size; i++) {
+		float t0 = (i - 1) / float(size - 1);
+		float t1 = i / float(size - 1);
+
+		float x0 = left + t0 * width;
+		float x1 = left + t1 * width;
+
+		float prev_normalized =
+			vel_buffer[(i - 1 + vel_index) % size] / float(max_speed);
+
+		float normalized =
+			vel_buffer[(i + vel_index) % size] / float(max_speed);
+
+		float y0 = bottom - (prev_normalized * height);
+		float y1 = bottom - (normalized * height);
 
 		d->AddLine(
-			center + prev_offset,
-			center + offset,
+			ImVec2(x0, y0),
+			ImVec2(x1, y1),
 			IM_COL32(255, 255, 255, 255));
 	}
+
+	auto center = ImVec2(
+		graph_pos.x + graph_size.x / 2,
+		graph_pos.y + graph_size.y
+	);
 
 	d->AddText(
 		center,
 		IM_COL32(255, 255, 255, 255),
 		std::to_string(speed).c_str());
-
 }
 
 void Esp::RenderCrosshair(Player local)

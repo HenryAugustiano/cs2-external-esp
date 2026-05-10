@@ -85,8 +85,6 @@ bool Config::ReadImpl() {
 		cfg::world::velocity::enabled = data["world"]["velocity"].value("enabled", false);
 		cfg::world::velocity::sample_rate = data["world"]["velocity"].value("sample_rate", 10);
 		cfg::world::velocity::sample_length = data["world"]["velocity"].value("sample_length", 5.f);
-		cfg::world::velocity::graph_width = data["world"]["velocity"].value("graph_width", 400.f);
-		cfg::world::velocity::graph_height = data["world"]["velocity"].value("graph_height", 0.2f);
 
 		// utils
 		//cfg::settings::console = data["utils"].value("console", true);
@@ -153,8 +151,8 @@ bool Config::WriteImpl() {
 	data["world"]["velocity"]["enabled"] = cfg::world::velocity::enabled;
 	data["world"]["velocity"]["sample_rate"] = cfg::world::velocity::sample_rate;
 	data["world"]["velocity"]["sample_length"] = cfg::world::velocity::sample_length;
-	data["world"]["velocity"]["graph_width"] = cfg::world::velocity::graph_width;
-	data["world"]["velocity"]["graph_height"] = cfg::world::velocity::graph_height;
+	//data["world"]["velocity"]["graph_width"] = cfg::world::velocity::graph_width;
+	//data["world"]["velocity"]["graph_height"] = cfg::world::velocity::graph_height;
 
 	// colors
 	auto& col = data["esp"]["colors"];
