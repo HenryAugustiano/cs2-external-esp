@@ -25,15 +25,8 @@ ImVec2 Menu::GetSize() {
 	return GetInstance().size;
 }
 
-
-int temp_rate;
-float temp_length;
-
 bool Menu::InitImpl() {
 	SetupStyles();
-
-	temp_rate = cfg::world::velocity::sample_rate;
-	temp_length = cfg::world::velocity::sample_length;
 
 	LOGF(INFO, "Successfully initialized menu...");
 	return true;
@@ -233,10 +226,12 @@ void Menu::RenderImpl() {
 					ImGui::Checkbox("Crosshair", &cfg::world::crosshair::enabled);
 					ImGui::Checkbox("Velocity Graph", &cfg::world::velocity::enabled);
 
+				#ifdef _DEBUG
 					if (cfg::world::velocity::enabled) {
 						ImGui::SliderInt("Sample rate", &cfg::world::velocity::sample_rate, 1, 100);
 						ImGui::SliderFloat("Sample length", &cfg::world::velocity::sample_length, 1, 20, "%.1f");
 					}
+				#endif
 				}
 				else if (active_tab == Tab::SETTINGS)
 				{

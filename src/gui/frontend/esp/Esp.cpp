@@ -74,7 +74,7 @@ void Esp::RenderImpl() {
 	}
 
 	RenderCrosshair(local);
-	RenderSpeed(local);
+	RenderSpeed(local, globals);
 
 	ImGui::PopFont();
 }
@@ -332,19 +332,23 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 int prev_rate = cfg::world::velocity::sample_rate;
 float prev_length = cfg::world::velocity::sample_length;
 
-void Esp::RenderSpeed(Player local) {
+void Esp::RenderSpeed(Player local, Globals globals) {
 	if (!cfg::world::velocity::enabled)
 		return;
 
 	const static float padding = 10.0f;
 	const bool is_menu_open = Renderer::IsOpen();
 
+	if (!is_menu_open && !globals.in_match)
+		return;
+
 	if (is_menu_open) {
 		auto height_padding = 25; // some padding to keep the speed number inside the area
 		auto altitude_padding = 10; // so it doesnt go under the titlebar
 
 		ImGui::SetNextWindowBgAlpha(0.1f);
-		ImGui::SetNextWindowSize(cfg::world::velocity::size + Vec2_t(0, height_padding));
+		ImGui::SetNextWindowPos(cfg::world::velocity::pos - Vec2_t(0, altitude_padding), ImGuiCond_Once);
+		ImGui::SetNextWindowSize(cfg::world::velocity::size + Vec2_t(0, height_padding), ImGuiCond_Once);
 		if (ImGui::Begin("Velocity Graph", nullptr, ImGuiWindowFlags_NoCollapse))
 		{
 			cfg::world::velocity::pos = ImGui::GetWindowPos() + ImVec2(0, altitude_padding);
@@ -630,7 +634,7 @@ void Esp::RenderSpectatorList(std::vector<Player>& players) {
 		return;
 
 	// Window
-	ImGui::SetNextWindowPos(ImVec2(cfg::world::spectators::pos.x, cfg::world::spectators::pos.y), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(cfg::world::spectators::pos, ImGuiCond_Once);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(150.f, 50.f), ImVec2(FLT_MAX, FLT_MAX));
 
 	if (!ImGui::Begin("Spectator list", nullptr, flags)) {

@@ -70,7 +70,7 @@ namespace cfg {
 			inline float sample_length = 5.f;
 
 			inline Vec2_t size{ 400.f, 100.f };
-			inline Vec2_t pos{ 10.f, 100.f };
+			inline Vec2_t pos{ 10.f, 400.f };
 		}
 	}
 

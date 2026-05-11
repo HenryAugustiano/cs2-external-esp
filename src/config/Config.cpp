@@ -85,6 +85,8 @@ bool Config::ReadImpl() {
 		cfg::world::velocity::enabled = data["world"]["velocity"].value("enabled", false);
 		cfg::world::velocity::sample_rate = data["world"]["velocity"].value("sample_rate", 10);
 		cfg::world::velocity::sample_length = data["world"]["velocity"].value("sample_length", 5.f);
+		cfg::world::velocity::pos = JsonToVec2(data["world"]["velocity"], "pos", { 10.f, 400.f });
+		cfg::world::velocity::size = JsonToVec2(data["world"]["velocity"], "size", { 400.f, 100.f });
 
 		// utils
 		//cfg::settings::console = data["utils"].value("console", true);
@@ -151,8 +153,8 @@ bool Config::WriteImpl() {
 	data["world"]["velocity"]["enabled"] = cfg::world::velocity::enabled;
 	data["world"]["velocity"]["sample_rate"] = cfg::world::velocity::sample_rate;
 	data["world"]["velocity"]["sample_length"] = cfg::world::velocity::sample_length;
-	//data["world"]["velocity"]["graph_width"] = cfg::world::velocity::graph_width;
-	//data["world"]["velocity"]["graph_height"] = cfg::world::velocity::graph_height;
+	Vec2ToJson(data["world"]["velocity"], "pos", cfg::world::velocity::pos);
+	Vec2ToJson(data["world"]["velocity"], "size", cfg::world::velocity::size);
 
 	// colors
 	auto& col = data["esp"]["colors"];
@@ -170,6 +172,7 @@ bool Config::WriteImpl() {
 	data["utils"]["watermark"] = cfg::settings::watermark;
 	data["utils"]["streamproof"] = cfg::settings::streamproof;
 	data["utils"]["vsync"] = cfg::settings::vsync;
+	data["utils"]["free_cpu"] = cfg::settings::free_cpu;
 	//data["utils"]["open_menu_key"] = cfg::settings::open_menu_key;
 
 	f << std::setw(4) << data << std::endl;
