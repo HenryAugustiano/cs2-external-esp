@@ -27,6 +27,8 @@ private:
     void RenderNotice();
     void RenderWatermark();
     void RenderDebugWindow();
+    void RenderSpectatorList();
 
     ImFont* font;
+    ImFont* font_alt;
 };

@@ -18,7 +18,7 @@ bool Overlays::InitImpl() {
 	ImFontConfig cfg{};
 	cfg.FontDataOwnedByAtlas = false;
 
-	//this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 14.0f, &cfg);
+	this->font_alt = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 14.0f, &cfg);
 	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
 
 	return true;
@@ -26,15 +26,22 @@ bool Overlays::InitImpl() {
 
 void Overlays::RenderImpl() {
 	ImGui::PushFont(this->font);
+	{
+		RenderWatermark();
 
-	RenderWatermark();
+		RenderNotice();
 
-	RenderNotice();
+	#ifdef _DEBUG
+		RenderDebugWindow();
+	#endif
 
-#ifdef _DEBUG
-	RenderDebugWindow();
-#endif
+	}
+	ImGui::PopFont();
 
+	ImGui::PushFont(this->font_alt);
+	{
+		RenderSpectatorList();
+	}
 	ImGui::PopFont();
 }
 
@@ -138,6 +145,115 @@ void Overlays::RenderNotice() {
 		nullptr, 
 		max_width
 	);
+}
+
+inline Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
+	Player* found = nullptr;
+
+	for (auto& p : players) {
+		if (p.pawn_controller_addr == index) {
+			found = &p;
+			break;
+		}
+	}
+	return found;
+}
+
+void Overlays::RenderSpectatorList() {
+	if (!cfg::spectators::enabled)
+		return;
+
+	auto snapshot = Cache::CopySnapshot();
+	auto& players = snapshot.players;
+
+	const bool is_menu_open = Renderer::IsOpen();
+	const bool detailed = cfg::spectators::detailed;
+	const bool self_only = cfg::spectators::self_only;
+
+	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
+	ImGuiTableFlags flags_table = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV;
+
+	bool should_render = false;
+	for (Player& p : players) {
+		if (auto i = p.observer_services.target) {
+			Player* target = FindPlayerByPawnIndex(players, i);
+
+			if (self_only && (!target || !target->localplayer))
+				continue;
+
+			should_render = true;
+			break;
+		}
+	}
+
+	if (!should_render && !is_menu_open)
+		return;
+
+	// Window
+	ImGui::SetNextWindowPos(cfg::spectators::pos, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSizeConstraints(ImVec2(150.f, 50.f), ImVec2(FLT_MAX, FLT_MAX));
+
+	if (!ImGui::Begin("Spectator list", nullptr, flags)) {
+		ImGui::End();
+		return;
+	}
+
+	if (is_menu_open)
+		cfg::spectators::pos = ImGui::GetWindowPos();
+
+	if (!should_render && is_menu_open) {
+		ImGui::TextDisabled("No spectators");
+		return ImGui::End();
+	}
+
+	if (detailed) {
+		if (ImGui::BeginTable("##detailed", 3, flags_table)) {
+			ImGui::TableSetupColumn("Name");
+			ImGui::TableSetupColumn("Mode");
+			ImGui::TableSetupColumn("Target");
+			ImGui::TableHeadersRow();
+
+			for (Player& player : players) {
+				if (player.alive) continue;
+
+				int targetIndex = player.observer_services.target;
+				if (targetIndex == 0) continue;
+
+				Player* target = FindPlayerByPawnIndex(players, targetIndex);
+
+				if (self_only && (!target || !target->localplayer))
+					continue;
+
+				ImGui::TableNextRow();
+				ImGui::TableSetColumnIndex(0);
+				ImGui::Text("%s", player.name);
+
+				ImGui::TableSetColumnIndex(1);
+				ImGui::Text("%s", player.observer_services.ToString());
+
+				ImGui::TableSetColumnIndex(2);
+				if (self_only) ImGui::Text("You");
+				else if (player.observer_services.mode == ObserverMode::Free) ImGui::Text("No One");
+				else ImGui::Text("%s", target ? target->name : "Invalid/bomb");
+			}
+
+			ImGui::EndTable();
+		}
+	}
+	else {
+		for (Player& player : players) {
+			if (player.alive) continue;
+			int targetIndex = player.observer_services.target;
+			if (targetIndex == 0) continue;
+			Player* target = FindPlayerByPawnIndex(players, targetIndex);
+
+			if (self_only && (!target || !target->localplayer)) continue;
+
+			ImGui::Text("%s", player.name);
+		}
+	}
+
+	ImGui::End();
 }
 
 void Overlays::RenderDebugWindow() {
