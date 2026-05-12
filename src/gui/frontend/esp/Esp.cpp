@@ -393,31 +393,33 @@ void Esp::RenderSpeed(Player local, Globals globals) {
 	float width = right - left;
 	float height = bottom - top;
 
+	std::vector<ImVec2> points;
+	points.reserve(size);
+
 	int max_speed = 1;
 	for (int v : vel_buffer)
 		max_speed = std::max(max_speed, v);
 
-	for (size_t i = 1; i < size; i++) {
-		float t0 = (i - 1) / float(size - 1);
-		float t1 = i / float(size - 1);
+	for (size_t i = 0; i < size; ++i) {
+		float t = i / float(size - 1);
 
-		float x0 = left + t0 * width;
-		float x1 = left + t1 * width;
-
-		float prev_normalized =
-			vel_buffer[(i - 1 + vel_index) % size] / float(max_speed);
+		float x = left + t * width;
 
 		float normalized =
 			vel_buffer[(i + vel_index) % size] / float(max_speed);
 
-		float y0 = bottom - (prev_normalized * height);
-		float y1 = bottom - (normalized * height);
+		float y = bottom - (normalized * height);
 
-		d->AddLine(
-			ImVec2(x0, y0),
-			ImVec2(x1, y1),
-			IM_COL32(255, 255, 255, 255));
+		points.emplace_back(x, y);
 	}
+
+	d->AddPolyline(
+		points.data(),
+		static_cast<int>(points.size()),
+		IM_COL32(255, 255, 255, 255),
+		ImDrawFlags_None,
+		1.0f
+	);
 
 	auto center = ImVec2(
 		graph_pos.x + graph_size.x / 2,
