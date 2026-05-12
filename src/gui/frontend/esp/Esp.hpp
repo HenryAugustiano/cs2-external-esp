@@ -20,11 +20,6 @@ private:
 
     // Temporary storage for ease
     view_matrix_t matrix;
-
-    // dont know where vel_buffer should live - me neither, but doesnt look bad here
-    size_t vel_index = 0;
-    std::vector<int> vel_buffer;
-    float vel_accumulator = 0.0f;
 private:
     Esp() {};
 
@@ -46,6 +41,5 @@ private:
 
 	void RenderCrosshair(Player local);
     void RenderBomb(Player local, Bomb bomb);
-    void RenderSpeed(Player local, Globals globals);
     void RenderSpectatorList(std::vector<Player>& players);
 };

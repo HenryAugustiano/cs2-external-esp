@@ -18,9 +18,6 @@ bool Esp::InitImpl() {
 
 	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
 
-	// make space and fill for samples
-	this->vel_buffer.resize(static_cast<size_t>(cfg::world::velocity::sample_rate * cfg::world::velocity::sample_length));
-
 	return true;
 }
 
@@ -74,8 +71,6 @@ void Esp::RenderImpl() {
 	}
 
 	RenderCrosshair(local);
-	RenderSpeed(local, globals);
-
 	ImGui::PopFont();
 }
 
@@ -327,109 +322,6 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 		offset -= offset_mult;
 	}
-}
-
-int prev_rate = cfg::world::velocity::sample_rate;
-float prev_length = cfg::world::velocity::sample_length;
-
-void Esp::RenderSpeed(Player local, Globals globals) {
-	if (!cfg::world::velocity::enabled)
-		return;
-
-	const static float padding = 10.0f;
-	const bool is_menu_open = Renderer::IsOpen();
-
-	if (!is_menu_open && !globals.in_match)
-		return;
-
-	if (is_menu_open) {
-		auto height_padding = 25; // some padding to keep the speed number inside the area
-		auto altitude_padding = 10; // so it doesnt go under the titlebar
-
-		ImGui::SetNextWindowBgAlpha(0.1f);
-		ImGui::SetNextWindowPos(cfg::world::velocity::pos - Vec2_t(0, altitude_padding), ImGuiCond_Once);
-		ImGui::SetNextWindowSize(cfg::world::velocity::size + Vec2_t(0, height_padding), ImGuiCond_Once);
-		if (ImGui::Begin("Velocity Graph", nullptr, ImGuiWindowFlags_NoCollapse))
-		{
-			cfg::world::velocity::pos = ImGui::GetWindowPos() + ImVec2(0, altitude_padding);
-			cfg::world::velocity::size = ImGui::GetWindowSize() - ImVec2(0, height_padding);
-			ImGui::End();
-		}
-	}
-
-	if (
-		prev_rate != cfg::world::velocity::sample_rate || 
-		prev_length != cfg::world::velocity::sample_length
-	) {
-		prev_rate = cfg::world::velocity::sample_rate;
-		prev_length = cfg::world::velocity::sample_length;
-
-		vel_buffer.resize(static_cast<size_t>(cfg::world::velocity::sample_rate * cfg::world::velocity::sample_length));
-	}
-
-	Vec2_t speed_2d(local.vel.x, local.vel.y);
-	int speed = floor(speed_2d.len());
-
-	float sample_interval = 1.0f / cfg::world::velocity::sample_rate;
-
-	vel_accumulator += io.DeltaTime;
-	size_t size = vel_buffer.size();
-
-	while (vel_accumulator >= sample_interval)
-	{
-		vel_accumulator -= sample_interval;
-		vel_buffer.at(vel_index % size) = speed;
-		vel_index = (vel_index + 1) % size;
-	}
-
-	ImVec2 graph_pos = cfg::world::velocity::pos;
-	ImVec2 graph_size = cfg::world::velocity::size;
-
-	float left = graph_pos.x + padding;
-	float right = graph_pos.x + graph_size.x - padding;
-	float bottom = graph_pos.y + graph_size.y - padding;
-	float top = graph_pos.y + padding;
-
-	float width = right - left;
-	float height = bottom - top;
-
-	std::vector<ImVec2> points;
-	points.reserve(size);
-
-	int max_speed = 1;
-	for (int v : vel_buffer)
-		max_speed = std::max(max_speed, v);
-
-	for (size_t i = 0; i < size; ++i) {
-		float t = i / float(size - 1);
-
-		float x = left + t * width;
-
-		float normalized =
-			vel_buffer[(i + vel_index) % size] / float(max_speed);
-
-		float y = bottom - (normalized * height);
-
-		points.emplace_back(x, y);
-	}
-
-	d->AddPolyline(
-		points.data(),
-		static_cast<int>(points.size()),
-		IM_COL32(255, 255, 255, 255),
-		ImDrawFlags_None,
-		1.0f
-	);
-
-	auto center = ImVec2(
-		graph_pos.x + graph_size.x / 2,
-		graph_pos.y + graph_size.y
-	);
-
-	d->AddText(
-		center,
-		IM_COL32(255, 255, 255, 255),
-		std::to_string(speed).c_str());
 }
 
 void Esp::RenderCrosshair(Player local)

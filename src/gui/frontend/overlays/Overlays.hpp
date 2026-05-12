@@ -12,6 +12,13 @@ public:
 
     static bool Init();
     static void Render();
+
+private:
+    ImFont* font;
+
+    size_t vel_index = 0;
+    std::vector<int> vel_buffer;
+    float vel_accumulator = 0.0f;
 private:
     Overlays() {};
 
@@ -26,7 +33,6 @@ private:
 
     void RenderNotice();
     void RenderWatermark();
+    void RenderSpeedChart();
     void RenderDebugWindow();
-
-    ImFont* font;
 };
