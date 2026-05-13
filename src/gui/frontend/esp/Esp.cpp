@@ -69,7 +69,6 @@ void Esp::RenderImpl() {
 	}
 
 	RenderCrosshair(local);
-
 	ImGui::PopFont();
 }
 
@@ -325,7 +324,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 void Esp::RenderCrosshair(Player local)
 {
-	if (!cfg::settings::crosshair)
+	if (!cfg::world::crosshair::enabled)
 		return;
 
 	if (local.scoped)
@@ -412,7 +411,7 @@ void Esp::RenderPlayerTracers(Player source, Player player, bool mate) {
 }
 
 void Esp::RenderBomb(Player local, Bomb bomb) {
-	if (!cfg::esp::bomb_location && !cfg::esp::bomb_timer)
+	if (!cfg::world::bomb::location && !cfg::world::bomb::timer)
 		return;
 
 	if (!bomb.is_planted)
@@ -445,14 +444,14 @@ void Esp::RenderBomb(Player local, Bomb bomb) {
 
 	std::string bomb_string = "";
 
-	if (cfg::esp::bomb_location)
+	if (cfg::world::bomb::location)
 	{
 		bomb_string += bombsite_str;
 	}
 
-	if (cfg::esp::bomb_timer)
+	if (cfg::world::bomb::timer)
 	{
-		if (cfg::esp::bomb_location)
+		if (cfg::world::bomb::location)
 			bomb_string += " - ";
 		else
 			bomb_string += " ";

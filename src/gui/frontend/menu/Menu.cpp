@@ -100,130 +100,138 @@ void Menu::RenderImpl() {
 			{
 				if (active_tab == Tab::PLAYER)
 				{
-					if (ImGui::BeginChild("##player_split"))
+					ImGui::Text("Visuals");
+					ImGui::Separator();
+
+					ImGui::BeginGroup();
 					{
-						auto space = ImGui::GetContentRegionAvail();
-
-						ImGui::Text("Visuals");
-						ImGui::Separator();
-
-						ImGui::BeginGroup();
+						ImGui::Checkbox("Box", &cfg::esp::box);
+						ImGui::BeginDisabled(!cfg::esp::box);
 						{
-							ImGui::Checkbox("Box", &cfg::esp::box);
-							ImGui::BeginDisabled(!cfg::esp::box);
-							{
-								ImGui::SameLine();
-								ImGui::ColorEdit4("Team box color", cfg::esp::colors::box_team.data(), color_flags);
-								ImGui::SameLine();
-								ImGui::ColorEdit4("Enemy box color", cfg::esp::colors::box_enemy.data(), color_flags);
-							}
-							ImGui::EndDisabled();
-
-							ImGui::Checkbox("Skeleton", &cfg::esp::skeleton);
-							ImGui::BeginDisabled(!cfg::esp::skeleton);
-							{
-								ImGui::SameLine();
-								ImGui::ColorEdit4("Team skeleton color", cfg::esp::colors::skeleton_team.data(), color_flags);
-								ImGui::SameLine();
-								ImGui::ColorEdit4("Enemy skeleton color", cfg::esp::colors::skeleton_enemy.data(), color_flags);
-							}
-							ImGui::EndDisabled();
-
-							ImGui::Checkbox("Head Tracker", &cfg::esp::head_tracker);
-							ImGui::BeginDisabled(!cfg::esp::head_tracker);
-							{
-								ImGui::SameLine();
-								ImGui::ColorEdit4("Team head tracker color", cfg::esp::colors::tracker_team.data(), color_flags);
-								ImGui::SameLine();
-								ImGui::ColorEdit4("Enemy head tracker color", cfg::esp::colors::tracker_enemy.data(), color_flags);
-							}
-							ImGui::EndDisabled();
-
-							ImGui::Checkbox("Tracers", &cfg::esp::tracers);
-							ImGui::BeginDisabled(!cfg::esp::tracers);
-							{
-								ImGui::SameLine();
-								ImGui::ColorEdit4("Team tracer color", cfg::esp::colors::tracer_team.data(), color_flags);
-								ImGui::SameLine();
-								ImGui::ColorEdit4("Enemy tracer color", cfg::esp::colors::tracer_enemy.data(), color_flags);
-							}
-							ImGui::EndDisabled();
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team box color", cfg::esp::colors::box_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy box color", cfg::esp::colors::box_enemy.data(), color_flags);
 						}
-						ImGui::EndGroup();
+						ImGui::EndDisabled();
 
-						ImGui::SameLine();
-
-						ImGui::BeginGroup();
+						ImGui::Checkbox("Skeleton", &cfg::esp::skeleton);
+						ImGui::BeginDisabled(!cfg::esp::skeleton);
 						{
-							ImGui::Checkbox("Health", &cfg::esp::health);
-							if (cfg::esp::health)
-								ImGui::Checkbox("Health Number", &cfg::esp::health_number);
-							ImGui::Checkbox("Armor", &cfg::esp::armor);
-
-							ImGui::Checkbox("Spotted", &cfg::esp::spotted);
-							ImGui::SetItemTooltip("Esp will only be visible if the player has been spotted by you");
-
-							ImGui::Checkbox("Show Team", &cfg::esp::team);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team skeleton color", cfg::esp::colors::skeleton_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy skeleton color", cfg::esp::colors::skeleton_enemy.data(), color_flags);
 						}
-						ImGui::EndGroup();
+						ImGui::EndDisabled();
 
-						//ImGui::SameLine();
-						ImGui::Spacing();
-
-						ImGui::Text("Flags");
-						ImGui::Separator();
-
-						ImGui::BeginGroup();
+						ImGui::Checkbox("Head Tracker", &cfg::esp::head_tracker);
+						ImGui::BeginDisabled(!cfg::esp::head_tracker);
 						{
-							ImGui::Checkbox("Name", &cfg::esp::flags::name);
-							ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
-							ImGui::Checkbox("Money", &cfg::esp::flags::money);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team head tracker color", cfg::esp::colors::tracker_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy head tracker color", cfg::esp::colors::tracker_enemy.data(), color_flags);
 						}
-						ImGui::EndGroup();
+						ImGui::EndDisabled();
 
-						ImGui::SameLine();
-
-						ImGui::BeginGroup();
+						ImGui::Checkbox("Tracers", &cfg::esp::tracers);
+						ImGui::BeginDisabled(!cfg::esp::tracers);
 						{
-							ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
-							ImGui::Checkbox("Ammo", &cfg::esp::flags::ammo);
-							ImGui::Checkbox("Reload indicator", &cfg::esp::flags::reloading);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Team tracer color", cfg::esp::colors::tracer_team.data(), color_flags);
+							ImGui::SameLine();
+							ImGui::ColorEdit4("Enemy tracer color", cfg::esp::colors::tracer_enemy.data(), color_flags);
 						}
-						ImGui::EndGroup();
-
-						ImGui::SameLine();
-
-						ImGui::BeginGroup();
-						{
-							ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
-							ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
-							ImGui::Checkbox("Ping", &cfg::esp::flags::ping);
-						}
-						ImGui::EndGroup();
-
-						ImGui::EndChild();
+						ImGui::EndDisabled();
 					}
+					ImGui::EndGroup();
+
+					ImGui::SameLine();
+
+					ImGui::BeginGroup();
+					{
+						ImGui::Checkbox("Health", &cfg::esp::health);
+						if (cfg::esp::health)
+							ImGui::Checkbox("Health Number", &cfg::esp::health_number);
+						ImGui::Checkbox("Armor", &cfg::esp::armor);
+
+						ImGui::Checkbox("Spotted", &cfg::esp::spotted);
+						ImGui::SetItemTooltip("Esp will only be visible if the player has been spotted by you");
+
+						ImGui::Checkbox("Show Team", &cfg::esp::team);
+					}
+					ImGui::EndGroup();
+
+					//ImGui::SameLine();
+					ImGui::Spacing();
+
+					ImGui::Text("Flags");
+					ImGui::Separator();
+
+					ImGui::BeginGroup();
+					{
+						ImGui::Checkbox("Name", &cfg::esp::flags::name);
+						ImGui::Checkbox("Defusing", &cfg::esp::flags::defusing);
+						ImGui::Checkbox("Money", &cfg::esp::flags::money);
+					}
+					ImGui::EndGroup();
+
+					ImGui::SameLine();
+
+					ImGui::BeginGroup();
+					{
+						ImGui::Checkbox("Weapon", &cfg::esp::flags::weapon);
+						ImGui::Checkbox("Ammo", &cfg::esp::flags::ammo);
+						ImGui::Checkbox("Reload indicator", &cfg::esp::flags::reloading);
+					}
+					ImGui::EndGroup();
+
+					ImGui::SameLine();
+
+					ImGui::BeginGroup();
+					{
+						ImGui::Checkbox("Flashed", &cfg::esp::flags::flashed);
+						ImGui::Checkbox("Scoped", &cfg::esp::flags::scoped);
+						ImGui::Checkbox("Ping", &cfg::esp::flags::ping);
+					}
+					ImGui::EndGroup();
 				}
 				else if (active_tab == Tab::WORLD)
 				{
 					ImGui::Text("Bomb");
+					
 					ImGui::Separator();
 
-					ImGui::Checkbox("Bomb Location", &cfg::esp::bomb_location);
-					ImGui::Checkbox("Bomb Timer", &cfg::esp::bomb_timer);
+					ImGui::Checkbox("Bomb Location", &cfg::world::bomb::location);
+					ImGui::Checkbox("Bomb Timer", &cfg::world::bomb::timer);
 
 					ImGui::Spacing();
 
 					ImGui::Text("Spectator list");
 					ImGui::Separator();
 
-					ImGui::Checkbox("Enable", &cfg::spectators::enabled);
-					if (cfg::spectators::enabled) {
-						ImGui::Checkbox("Detailed", &cfg::spectators::detailed);
-						ImGui::Checkbox("Only Self", &cfg::spectators::self_only);
+					ImGui::Checkbox("Enable", &cfg::world::spectators::enabled);
+					if (cfg::world::spectators::enabled) {
+						ImGui::Checkbox("Detailed", &cfg::world::spectators::detailed);
+						ImGui::Checkbox("Only Self", &cfg::world::spectators::self_only);
 						ImGui::SetItemTooltip("Only display users spectating you");
 					}
 
+					ImGui::Spacing();
+
+					ImGui::Text("Misc");
+					ImGui::Separator();
+
+					ImGui::Checkbox("Crosshair", &cfg::world::crosshair::enabled);
+					ImGui::Checkbox("Velocity Graph", &cfg::world::velocity::enabled);
+
+				#ifdef _DEBUG
+					if (cfg::world::velocity::enabled) {
+						ImGui::SliderInt("Sample rate", &cfg::world::velocity::sample_rate, 1, 100);
+						ImGui::SliderFloat("Sample length", &cfg::world::velocity::sample_length, 1, 20, "%.1f");
+					}
+				#endif
 				}
 				else if (active_tab == Tab::SETTINGS)
 				{
@@ -239,7 +247,6 @@ void Menu::RenderImpl() {
 					}
 
 					ImGui::Checkbox("Watermark", &cfg::settings::watermark);
-					ImGui::Checkbox("Crosshair", &cfg::settings::crosshair);
 
 					if (ImGui::Checkbox("VSync", &cfg::settings::vsync))
 						Window::vsync = cfg::settings::vsync;

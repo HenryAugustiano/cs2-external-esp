@@ -15,9 +15,6 @@ namespace cfg {
 
 		inline bool spotted = false;
 
-		inline bool bomb_location = true;
-		inline bool bomb_timer = true;
-
 		inline bool tracers = false;
 
 		namespace flags {
@@ -48,21 +45,39 @@ namespace cfg {
 
 	}
 
-	namespace spectators {
-		inline bool enabled = false;
+	namespace world {
+		namespace spectators {
+			inline bool enabled = false;
 
-		inline bool detailed = false;
-		inline bool self_only = true;
+			inline bool detailed = false;
+			inline bool self_only = true;
 
-		inline Vec2_t pos{ 10.f, 100.f };
+			inline Vec2_t pos{ 10.f, 100.f };
+		}
+
+		namespace bomb {
+			inline bool location = true;
+			inline bool timer = true;
+		}
+
+		namespace crosshair {
+			inline bool enabled = false;
+		}
+
+		namespace velocity {
+			inline bool enabled = false;
+			inline int sample_rate = 35;
+			inline float sample_length = 5.f;
+
+			inline Vec2_t size{ 400.f, 100.f };
+			inline Vec2_t pos{ 10.f, 400.f };
+		}
 	}
 
 	namespace settings {
 		inline bool watermark = true;
-		inline bool crosshair = false;
 		inline bool streamproof = false;
 		inline bool vsync = false;
-
 		inline bool free_cpu = true;
 	}
 

@@ -21,6 +21,10 @@ bool Overlays::InitImpl() {
 	this->font_alt = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\arial.ttf", 14.0f, &cfg);
 	this->font = io.Fonts->AddFontFromFileTTF("C:\\Windows\\Fonts\\consola.ttf", 12.0f, &cfg);
 
+
+	// Pre allocate buffer
+	this->vel_buffer.resize(static_cast<size_t>(cfg::world::velocity::sample_rate * cfg::world::velocity::sample_length));
+
 	return true;
 }
 
@@ -41,6 +45,7 @@ void Overlays::RenderImpl() {
 	ImGui::PushFont(this->font_alt);
 	{
 		RenderSpectatorList();
+		RenderSpeedChart();
 	}
 	ImGui::PopFont();
 }
@@ -256,8 +261,122 @@ void Overlays::RenderSpectatorList() {
 	ImGui::End();
 }
 
-void Overlays::RenderDebugWindow() {
+int prev_rate = cfg::world::velocity::sample_rate;
+float prev_length = cfg::world::velocity::sample_length;
+
+void Overlays::RenderSpeedChart() {
+	if (!cfg::world::velocity::enabled)
+		return;
+
+	auto& io = ImGui::GetIO();
+	auto d = ImGui::GetBackgroundDrawList();
+
+	auto snapshot = Cache::CopySnapshot();
+	auto& local = snapshot.local;
+	auto& globals = snapshot.globals;
+
+	const static float padding = 10.0f;
+	const bool is_menu_open = Renderer::IsOpen();
+
+	auto& pos = cfg::world::velocity::pos;
+	auto& size = cfg::world::velocity::size;
+
+	int rate = cfg::world::velocity::sample_rate;
+	float length = cfg::world::velocity::sample_length;
+
+	static int prev_rate = rate;
+	static float prev_length = length;
+
+	float left = pos.x + padding;
+	float right = pos.x + size.x - padding;
+	float bottom = pos.y + size.y - padding;
+	float top = pos.y + padding;
+
+	float width = right - left;
+	float height = bottom - top;
+
+	if (!is_menu_open && !globals.in_match)
+		return;
+
+	if (is_menu_open) {
+		auto height_padding = 25; // some padding to keep the speed number inside the area
+		auto altitude_padding = 10; // so it doesnt go under the titlebar
+
+		ImGui::SetNextWindowBgAlpha(0.1f);
+		ImGui::SetNextWindowPos(pos - Vec2_t(0, altitude_padding), ImGuiCond_Once);
+		ImGui::SetNextWindowSize(size + Vec2_t(0, height_padding), ImGuiCond_Once);
+		if (ImGui::Begin("Velocity Graph", nullptr, ImGuiWindowFlags_NoCollapse))
+		{
+			pos = ImGui::GetWindowPos() + ImVec2(0, altitude_padding);
+			size = ImGui::GetWindowSize() - ImVec2(0, height_padding);
+			ImGui::End();
+		}
+	}
+
+	// Cache menu values and resize when changed
+	if (prev_rate != rate || prev_length != length) {
+		prev_rate = rate;
+		prev_length = length;
+
+		vel_buffer.resize(static_cast<size_t>(rate * length));
+	}
+
+	Vec2_t speed_2d(local.vel.x, local.vel.y);
+	int speed = floor(speed_2d.len());
+
+	vel_accumulator += io.DeltaTime;
+	size_t buff_size = vel_buffer.size();
+
+	std::vector<ImVec2> points;
+	points.reserve(buff_size);
+
+	float sample_interval = 1.0f / rate;
+
+	while (vel_accumulator >= sample_interval)
+	{
+		vel_accumulator -= sample_interval;
+		vel_buffer.at(vel_index % buff_size) = speed;
+		vel_index = (vel_index + 1) % buff_size;
+	}
+
+	int max_speed = 1;
+	for (int v : vel_buffer)
+		max_speed = std::max(max_speed, v);
+
+	for (size_t i = 0; i < buff_size; ++i) {
+		float t = i / float(buff_size - 1);
+
+		float x = left + t * width;
+
+		float normalized =
+			vel_buffer[(i + vel_index) % buff_size] / float(max_speed);
+
+		float y = bottom - (normalized * height);
+
+		points.emplace_back(x, y);
+	}
+
+	d->AddPolyline(
+		points.data(),
+		static_cast<int>(points.size()),
+		IM_COL32(255, 255, 255, 255),
+		ImDrawFlags_None,
+		1.0f
+	);
+
+	auto center = ImVec2(
+		pos.x + size.x / 2,
+		pos.y + size.y
+	);
+
+	d->AddText(
+		center,
+		IM_COL32(255, 255, 255, 255),
+		std::to_string(speed).c_str());
+}
+
 #ifdef _DEBUG
+void Overlays::RenderDebugWindow() {
 	auto& io = ImGui::GetIO();
 	auto d = ImGui::GetBackgroundDrawList();
 
@@ -311,5 +430,5 @@ void Overlays::RenderDebugWindow() {
 		IM_COL32(255, 255, 255, 255),
 		debug_string.data()
 	);
-#endif
 }
+#endif

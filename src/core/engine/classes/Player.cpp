@@ -106,6 +106,8 @@ bool Player::UpdatePawn() {
 	if (this->pos.zero())
 		return false;
 
+	this->vel = p->read<Vec3_t>(pawn + offsets::pawn::m_vecAbsVelocity);
+
 	this->team = p->read<uint8_t>(pawn + offsets::pawn::m_iTeamNum);
 
 	this->armor = p->read<int>(pawn + offsets::pawn::m_ArmorValue);

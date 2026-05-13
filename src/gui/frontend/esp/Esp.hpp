@@ -12,6 +12,14 @@ public:
 
     static bool Init();
     static void Render();
+
+private:
+    ImGuiIO io;
+    ImFont* font;
+    ImDrawList* d;
+
+    // Temporary storage for ease
+    view_matrix_t matrix;
 private:
     Esp() {};
 
@@ -23,13 +31,6 @@ private:
 
     bool InitImpl();
     void RenderImpl();
-
-    ImGuiIO io;
-    ImFont* font;
-    ImDrawList* d;
-
-    // Temporary storage for ease
-    view_matrix_t matrix;
 
     void RenderPlayer(Player player, bool mate = false);
     void RenderPlayerBones(Player player, bool mate = false);

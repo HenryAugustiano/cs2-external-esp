@@ -15,6 +15,7 @@ public:
     int8_t index = -1; // To use as invalid/un-initialize check
 
     Vec3_t pos;
+    Vec3_t vel;
 
     int ping = 0;
     int team = 0;
@@ -53,12 +54,10 @@ private:
 private:
     bool GetPawn();
     bool GetController();
-    bool GetObserverServices();
 
     bool UpdatePawn();
     bool UpdateWeapon();
     bool UpdateSkeleton();
     bool UpdateController();
     bool UpdateObserverServices();
-    bool UpdateObserverServices2();
 };

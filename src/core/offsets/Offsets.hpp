@@ -37,6 +37,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_bIsScoped = 0x1C50; // bool
 		constexpr std::ptrdiff_t m_ArmorValue = 0x1C7C; // int32
 		constexpr std::ptrdiff_t m_bIsDefusing = 0x1C52; // bool
+		constexpr std::ptrdiff_t m_vecAbsVelocity = 0x3FC; // Vector
 
 		constexpr std::ptrdiff_t m_pGameSceneNode = 0x330; // CGameSceneNode*
 		constexpr std::ptrdiff_t m_pClippingWeapon = 0x3DC0; // C_CSWeaponBase*
