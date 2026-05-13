@@ -165,15 +165,15 @@ inline Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
 }
 
 void Overlays::RenderSpectatorList() {
-	if (!cfg::spectators::enabled)
+	if (!cfg::world::spectators::enabled)
 		return;
 
 	auto snapshot = Cache::CopySnapshot();
 	auto& players = snapshot.players;
 
 	const bool is_menu_open = Renderer::IsOpen();
-	const bool detailed = cfg::spectators::detailed;
-	const bool self_only = cfg::spectators::self_only;
+	const bool detailed = cfg::world::spectators::detailed;
+	const bool self_only = cfg::world::spectators::self_only;
 
 	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
 	ImGuiTableFlags flags_table = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV;
@@ -195,7 +195,7 @@ void Overlays::RenderSpectatorList() {
 		return;
 
 	// Window
-	ImGui::SetNextWindowPos(cfg::spectators::pos, ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(cfg::world::spectators::pos, ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSizeConstraints(ImVec2(150.f, 50.f), ImVec2(FLT_MAX, FLT_MAX));
 
 	if (!ImGui::Begin("Spectator list", nullptr, flags)) {
@@ -204,7 +204,7 @@ void Overlays::RenderSpectatorList() {
 	}
 
 	if (is_menu_open)
-		cfg::spectators::pos = ImGui::GetWindowPos();
+		cfg::world::spectators::pos = ImGui::GetWindowPos();
 
 	if (!should_render && is_menu_open) {
 		ImGui::TextDisabled("No spectators");
@@ -260,9 +260,6 @@ void Overlays::RenderSpectatorList() {
 
 	ImGui::End();
 }
-
-int prev_rate = cfg::world::velocity::sample_rate;
-float prev_length = cfg::world::velocity::sample_length;
 
 void Overlays::RenderSpeedChart() {
 	if (!cfg::world::velocity::enabled)
