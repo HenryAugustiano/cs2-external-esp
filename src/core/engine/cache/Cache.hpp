@@ -4,9 +4,6 @@
 #include "core/engine/classes/Player.hpp"
 #include "core/engine/classes/Globals.hpp"
 
-//constexpr int MAX_ENTITIES = 1024;
-//constexpr int MAX_PLAYERS = 64; // No need we get this from Globals
-
 using namespace std::chrono;
 
 struct Snapshot {

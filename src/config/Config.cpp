@@ -43,8 +43,6 @@ bool Config::ReadImpl() {
 		cfg::esp::skeleton = data["esp"].value("skeleton", true);
 		cfg::esp::head_tracker = data["esp"].value("head_tracker", true);
 		cfg::esp::health_number = data["esp"].value("health_number", false);
-		cfg::esp::bomb_location = data["esp"].value("bomb_location", true);
-		cfg::esp::bomb_timer = data["esp"].value("bomb_timer", true);
 		cfg::esp::tracers = data["esp"].value("tracers", false);
 
 		// flags
@@ -69,16 +67,30 @@ bool Config::ReadImpl() {
 		cfg::esp::colors::tracer_team = JsonToColor(col, "tracer_team", { 0.f, 1.f, 0.f, 0.5f });
 		cfg::esp::colors::tracer_enemy = JsonToColor(col, "tracer_enemy", { 1.f, 0.f, 0.f, 0.5f });
 
+		// world
 		// spectator list
-		cfg::spectators::enabled = data["spectators"].value("enabled", true);
-		cfg::spectators::detailed = data["spectators"].value("detailed", false);
-		cfg::spectators::self_only = data["spectators"].value("self_only", true);
-		cfg::spectators::pos = JsonToVec2(data["spectators"], "pos", { 10.f, 100.f });
+		cfg::world::spectators::enabled = data["world"]["spectators"].value("enabled", true);
+		cfg::world::spectators::detailed = data["world"]["spectators"].value("detailed", false);
+		cfg::world::spectators::self_only = data["world"]["spectators"].value("self_only", true);
+		cfg::world::spectators::pos = JsonToVec2(data["world"]["spectators"], "pos", {10.f, 100.f});
+
+		// bomb
+		cfg::world::bomb::location = data["world"]["bomb"].value("bomb_location", true);
+		cfg::world::bomb::timer = data["world"]["bomb"].value("bomb_timer", true);
+
+		// crosshair
+		cfg::world::crosshair::enabled = data["world"]["crosshair"].value("enabled", false); 
+
+		// velocity
+		cfg::world::velocity::enabled = data["world"]["velocity"].value("enabled", false);
+		cfg::world::velocity::sample_rate = data["world"]["velocity"].value("sample_rate", 10);
+		cfg::world::velocity::sample_length = data["world"]["velocity"].value("sample_length", 5.f);
+		cfg::world::velocity::pos = JsonToVec2(data["world"]["velocity"], "pos", { 10.f, 400.f });
+		cfg::world::velocity::size = JsonToVec2(data["world"]["velocity"], "size", { 400.f, 100.f });
 
 		// utils
 		//cfg::settings::console = data["utils"].value("console", true);
 		cfg::settings::watermark = data["utils"].value("watermark", true);
-		cfg::settings::crosshair = data["utils"].value("crosshair", false);
 		cfg::settings::streamproof = data["utils"].value("streamproof", false);
 		cfg::settings::vsync = data["utils"].value("vsync", true);
 		cfg::settings::free_cpu = data["utils"].value("free_cpu", true);
@@ -110,8 +122,6 @@ bool Config::WriteImpl() {
 	data["esp"]["skeleton"] = cfg::esp::skeleton;
 	data["esp"]["head_tracker"] = cfg::esp::head_tracker;
 	data["esp"]["spotted"] = cfg::esp::spotted;
-	data["esp"]["bomb_location"] = cfg::esp::bomb_location;
-	data["esp"]["bomb_timer"] = cfg::esp::bomb_timer;
 	data["esp"]["tracers"] = cfg::esp::tracers;
 
 	// flags
@@ -125,11 +135,26 @@ bool Config::WriteImpl() {
 	data["esp"]["flags"]["flashed"] = cfg::esp::flags::flashed;
 	data["esp"]["flags"]["defusing"] = cfg::esp::flags::defusing;
 
+	// world
 	// spectator list
-	data["spectators"]["enabled"] = cfg::spectators::enabled;
-	data["spectators"]["detailed"] = cfg::spectators::detailed;
-	data["spectators"]["self_only"] = cfg::spectators::self_only;
-	Vec2ToJson(data["spectators"], "pos", cfg::spectators::pos);
+	data["world"]["spectators"]["enabled"] = cfg::world::spectators::enabled;
+	data["world"]["spectators"]["detailed"] = cfg::world::spectators::detailed;
+	data["world"]["spectators"]["self_only"] = cfg::world::spectators::self_only;
+	Vec2ToJson(data["world"]["spectators"], "pos", cfg::world::spectators::pos);
+
+	// bomb
+	data["world"]["bomb"]["location"] = cfg::world::bomb::location;
+	data["world"]["bomb"]["timer"] = cfg::world::bomb::timer;
+
+	// crosshair
+	data["world"]["crosshair"]["enabled"] = cfg::world::crosshair::enabled;
+
+	// velocity
+	data["world"]["velocity"]["enabled"] = cfg::world::velocity::enabled;
+	data["world"]["velocity"]["sample_rate"] = cfg::world::velocity::sample_rate;
+	data["world"]["velocity"]["sample_length"] = cfg::world::velocity::sample_length;
+	Vec2ToJson(data["world"]["velocity"], "pos", cfg::world::velocity::pos);
+	Vec2ToJson(data["world"]["velocity"], "size", cfg::world::velocity::size);
 
 	// colors
 	auto& col = data["esp"]["colors"];
@@ -145,9 +170,9 @@ bool Config::WriteImpl() {
 	// utils
 	//data["utils"]["console"] = cfg::settings::console;
 	data["utils"]["watermark"] = cfg::settings::watermark;
-	data["utils"]["crosshair"] = cfg::settings::crosshair;
 	data["utils"]["streamproof"] = cfg::settings::streamproof;
 	data["utils"]["vsync"] = cfg::settings::vsync;
+	data["utils"]["free_cpu"] = cfg::settings::free_cpu;
 	//data["utils"]["open_menu_key"] = cfg::settings::open_menu_key;
 
 	f << std::setw(4) << data << std::endl;

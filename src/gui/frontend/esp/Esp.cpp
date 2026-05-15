@@ -32,8 +32,6 @@ void Esp::RenderImpl() {
 	auto& globals = snapshot.globals;
 	auto& players = snapshot.players;
 	
-	RenderSpectatorList(players);
-
 	ImGui::PushFont(this->font);
 
 	this->io = ImGui::GetIO();
@@ -71,7 +69,6 @@ void Esp::RenderImpl() {
 	}
 
 	RenderCrosshair(local);
-
 	ImGui::PopFont();
 }
 
@@ -327,7 +324,7 @@ void Esp::RenderPlayerFalgs(Player player, std::pair<Vec2_t, Vec2_t> bounds, boo
 
 void Esp::RenderCrosshair(Player local)
 {
-	if (!cfg::settings::crosshair)
+	if (!cfg::world::crosshair::enabled)
 		return;
 
 	if (local.scoped)
@@ -414,7 +411,7 @@ void Esp::RenderPlayerTracers(Player source, Player player, bool mate) {
 }
 
 void Esp::RenderBomb(Player local, Bomb bomb) {
-	if (!cfg::esp::bomb_location && !cfg::esp::bomb_timer)
+	if (!cfg::world::bomb::location && !cfg::world::bomb::timer)
 		return;
 
 	if (!bomb.is_planted)
@@ -447,14 +444,14 @@ void Esp::RenderBomb(Player local, Bomb bomb) {
 
 	std::string bomb_string = "";
 
-	if (cfg::esp::bomb_location)
+	if (cfg::world::bomb::location)
 	{
 		bomb_string += bombsite_str;
 	}
 
-	if (cfg::esp::bomb_timer)
+	if (cfg::world::bomb::timer)
 	{
-		if (cfg::esp::bomb_location)
+		if (cfg::world::bomb::location)
 			bomb_string += " - ";
 		else
 			bomb_string += " ";
@@ -484,118 +481,4 @@ void Esp::RenderBomb(Player local, Bomb bomb) {
 		IM_COL32(255, 255, 255, 255),
 		bomb_string.data()
 	);
-}
-
-Player* FindPlayerByPawnIndex(std::vector<Player>& players, int index) {
-	Player* found = nullptr;
-
-	for (auto& p : players) {
-		if (p.pawn_controller_addr == index) {
-			found = &p;
-			break;
-		}
-	}
-	return found;
-}
-
-// TODO: Move this to Overlays.cpp
-void Esp::RenderSpectatorList(std::vector<Player>& players) {
-	if (!cfg::spectators::enabled) 
-		return;
-
-	static auto io = ImGui::GetIO();
-	static auto screen = io.DisplaySize;
-	const bool detailed = cfg::spectators::detailed;
-	const bool self_only = cfg::spectators::self_only;
-	const bool is_menu_open = Renderer::IsOpen();
-	
-	ImGuiWindowFlags flags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
-	ImGuiTableFlags flags_table = ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_BordersOuterH | ImGuiTableFlags_BordersV;
-
-	bool should_render = false;
-	for (Player& p : players) {
-		if (auto i = p.observer_services.target) {
-			Player* target = FindPlayerByPawnIndex(players, i);
-
-			if (self_only && (!target || !target->localplayer))
-				continue;
-		
-			should_render = true;
-			break;
-		}
-	}
-
-	if (!should_render && !is_menu_open)
-		return;
-
-	// Window
-	ImGui::SetNextWindowPos(ImVec2(cfg::spectators::pos.x, cfg::spectators::pos.y), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSizeConstraints(ImVec2(150.f, 50.f), ImVec2(FLT_MAX, FLT_MAX));
-
-	if (!ImGui::Begin("Spectator list", nullptr, flags)) {
-		ImGui::End();
-		return;
-	}
-
-	if (is_menu_open)
-		cfg::spectators::pos = {
-			ImGui::GetWindowPos().x,
-			ImGui::GetWindowPos().y
-		};
-
-	if (!should_render && is_menu_open) {
-		ImGui::TextDisabled("No spectators");
-		return ImGui::End();
-	}
-
-	//const int columns = detailed ? 3 : 1;
-
-	if (detailed) {
-		if (ImGui::BeginTable("##detailed", 3, flags_table)) {
-			ImGui::TableSetupColumn("Name");
-			ImGui::TableSetupColumn("Mode");
-			ImGui::TableSetupColumn("Target");
-			ImGui::TableHeadersRow();
-
-			for (Player& player : players) {
-				if (player.alive) continue;
-
-				int targetIndex = player.observer_services.target;
-				if (targetIndex == 0) continue;
-
-				Player* target = FindPlayerByPawnIndex(players, targetIndex);
-
-				if (self_only && (!target || !target->localplayer)) 
-					continue;
-
-				ImGui::TableNextRow();
-				ImGui::TableSetColumnIndex(0);
-				ImGui::Text("%s", player.name);
-
-				ImGui::TableSetColumnIndex(1);
-				ImGui::Text("%s", player.observer_services.ToString());
-
-				ImGui::TableSetColumnIndex(2);
-				if (self_only) ImGui::Text("You");
-				else if (player.observer_services.mode == ObserverMode::Free) ImGui::Text("No One");
-				else ImGui::Text("%s", target ? target->name : "Invalid/bomb");
-			}
-
-			ImGui::EndTable();
-		}
-	}
-	else {
-		for (Player& player : players) {
-			if (player.alive) continue;
-			int targetIndex = player.observer_services.target;
-			if (targetIndex == 0) continue;
-			Player* target = FindPlayerByPawnIndex(players, targetIndex);
-
-			if (self_only && (!target || !target->localplayer)) continue;
-
-			ImGui::Text("%s", player.name);
-		}
-	}
-
-	ImGui::End();
 }

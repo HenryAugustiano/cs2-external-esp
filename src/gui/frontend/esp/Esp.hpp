@@ -12,6 +12,14 @@ public:
 
     static bool Init();
     static void Render();
+
+private:
+    ImGuiIO io;
+    ImFont* font;
+    ImDrawList* d;
+
+    // Temporary storage for ease
+    view_matrix_t matrix;
 private:
     Esp() {};
 
@@ -24,13 +32,6 @@ private:
     bool InitImpl();
     void RenderImpl();
 
-    ImGuiIO io;
-    ImFont* font;
-    ImDrawList* d;
-
-    // Temporary storage for ease
-    view_matrix_t matrix;
-
     void RenderPlayer(Player player, bool mate = false);
     void RenderPlayerBones(Player player, bool mate = false);
     void RenderPlayerBars(Player player, std::pair<Vec2_t, Vec2_t> bounds);
@@ -40,5 +41,4 @@ private:
 
 	void RenderCrosshair(Player local);
     void RenderBomb(Player local, Bomb bomb);
-    void RenderSpectatorList(std::vector<Player>& players);
 };
