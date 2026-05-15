@@ -55,6 +55,7 @@ namespace offsets
 		constexpr std::ptrdiff_t m_iClip1 = 0x16D8; // int32 - C_BasePlayerWeapon
 		constexpr std::ptrdiff_t m_bInReload = 0x17F4; // bool - C_CSWeaponBase
 		constexpr std::ptrdiff_t m_pObserverServices = 0x11F8; // CPlayer_ObserverServices*
+		constexpr std::ptrdiff_t m_iIdEntIndex = 0x344C; // int32 - C_CSPlayerPawnBase
 	}
 
 	namespace bomb {
